@@ -1,19 +1,59 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import SearchBar from "./components/SearchBar.jsx";
 import InitialState from "./components/InitialState.jsx";
+import { searchBooks } from "./services/bookApi.js";
 
 /**
- * PHASE 3 — search state + controlled input + submission, still no API.
- * `query` is the live input value; `submittedQuery` is only updated once
- * a valid search is submitted, and is what a future fetch (Phase 4) will
- * key off of. `searchError` holds simple input validation, separate from
- * the API error state that arrives later.
+ * PHASE 4 — connected to the real Open Library API.
+ * `submittedQuery` (from Phase 3) now drives a useEffect that fetches
+ * results. `books`, `isLoading`, and `apiError` are the search-results
+ * state your spec calls for. The rendering here is intentionally plain —
+ * BookCard styling is Phase 5, and polished loading/empty/error UI is
+ * Phase 6. This phase is only about the data being correct.
  */
 function App() {
   const [query, setQuery] = useState("");
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [searchError, setSearchError] = useState("");
+
+  const [books, setBooks] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState("");
+
+  useEffect(() => {
+    if (!submittedQuery) return;
+
+    // Guards against a slow earlier request overwriting a faster later one.
+    let cancelled = false;
+
+    async function runSearch() {
+      setIsLoading(true);
+      setApiError("");
+
+      try {
+        const results = await searchBooks(submittedQuery);
+        if (!cancelled) {
+          setBooks(results);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setApiError(err.message);
+          setBooks([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    runSearch();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [submittedQuery]);
 
   function handleSearchSubmit() {
     const trimmed = query.trim();
@@ -25,8 +65,25 @@ function App() {
 
     setSearchError("");
     setSubmittedQuery(trimmed);
-    // Phase 4 replaces this with the real Open Library fetch.
-    console.log("Search triggered for:", trimmed);
+  }
+
+  function renderResults() {
+    if (!submittedQuery) return <InitialState />;
+    if (isLoading) return <p className="plain-status">Searching for books…</p>;
+    if (apiError) return <p className="plain-status plain-status--error">{apiError}</p>;
+    if (books.length === 0) return <p className="plain-status">No books found.</p>;
+
+    // Plain list for now — Phase 5 replaces this with BookCard in a grid.
+    return (
+      <ul className="plain-results">
+        {books.map((book) => (
+          <li key={book.key}>
+            <strong>{book.title}</strong> — {book.author}
+            {book.firstPublishYear ? ` (${book.firstPublishYear})` : ""}
+          </li>
+        ))}
+      </ul>
+    );
   }
 
   return (
@@ -51,21 +108,7 @@ function App() {
         </div>
       </header>
 
-      <main className="results-area">
-        {submittedQuery ? (
-          <div className="search-echo">
-            <span className="catalog-label">Search submitted</span>
-            <h2>&ldquo;{submittedQuery}&rdquo;</h2>
-            <p>
-              The actual fetch to Open Library isn&rsquo;t wired up yet —
-              that&rsquo;s Phase 4. For now this just confirms the search
-              state is working end to end.
-            </p>
-          </div>
-        ) : (
-          <InitialState />
-        )}
-      </main>
+      <main className="results-area">{renderResults()}</main>
     </div>
   );
 }
