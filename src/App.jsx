@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import SearchBar from "./components/SearchBar.jsx";
 import InitialState from "./components/InitialState.jsx";
+import BookList from "./components/BookList.jsx";
 import { searchBooks } from "./services/bookApi.js";
 
 /**
@@ -73,17 +74,7 @@ function App() {
     if (apiError) return <p className="plain-status plain-status--error">{apiError}</p>;
     if (books.length === 0) return <p className="plain-status">No books found.</p>;
 
-    // Plain list for now — Phase 5 replaces this with BookCard in a grid.
-    return (
-      <ul className="plain-results">
-        {books.map((book) => (
-          <li key={book.key}>
-            <strong>{book.title}</strong> — {book.author}
-            {book.firstPublishYear ? ` (${book.firstPublishYear})` : ""}
-          </li>
-        ))}
-      </ul>
-    );
+    return <BookList books={books} />;
   }
 
   return (
