@@ -50,3 +50,19 @@
   margin: 0 auto;
   padding: var(--space-4);
 }
+
+.search-echo {
+  max-width: 40ch;
+  margin: var(--space-6) auto 0;
+  text-align: center;
+}
+
+.search-echo h2 {
+  font-size: 1.8rem;
+  margin: var(--space-1) 0 var(--space-2);
+  color: var(--brass);
+}
+
+.search-echo p {
+  color: var(--ink-soft);
+}
