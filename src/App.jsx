@@ -3,20 +3,22 @@ import "./App.css";
 import SearchBar from "./components/SearchBar.jsx";
 import InitialState from "./components/InitialState.jsx";
 import BookList from "./components/BookList.jsx";
+import LoadingState from "./components/LoadingState.jsx";
+import EmptyState from "./components/EmptyState.jsx";
+import ErrorState from "./components/ErrorState.jsx";
 import { searchBooks } from "./services/bookApi.js";
 
 /**
- * PHASE 4 — connected to the real Open Library API.
- * `submittedQuery` (from Phase 3) now drives a useEffect that fetches
- * results. `books`, `isLoading`, and `apiError` are the search-results
- * state your spec calls for. The rendering here is intentionally plain —
- * BookCard styling is Phase 5, and polished loading/empty/error UI is
- * Phase 6. This phase is only about the data being correct.
+ * PHASE 6 — polished loading, empty, and error states.
+ * `retryToken` exists purely so the "Try again" button can re-run the
+ * exact same search: bumping it re-triggers the effect below even
+ * though `submittedQuery` itself hasn't changed.
  */
 function App() {
   const [query, setQuery] = useState("");
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [searchError, setSearchError] = useState("");
+  const [retryToken, setRetryToken] = useState(0);
 
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +56,7 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [submittedQuery]);
+  }, [submittedQuery, retryToken]);
 
   function handleSearchSubmit() {
     const trimmed = query.trim();
@@ -68,11 +70,15 @@ function App() {
     setSubmittedQuery(trimmed);
   }
 
+  function handleRetry() {
+    setRetryToken((n) => n + 1);
+  }
+
   function renderResults() {
     if (!submittedQuery) return <InitialState />;
-    if (isLoading) return <p className="plain-status">Searching for books…</p>;
-    if (apiError) return <p className="plain-status plain-status--error">{apiError}</p>;
-    if (books.length === 0) return <p className="plain-status">No books found.</p>;
+    if (isLoading) return <LoadingState />;
+    if (apiError) return <ErrorState message={apiError} onRetry={handleRetry} />;
+    if (books.length === 0) return <EmptyState query={submittedQuery} />;
 
     return <BookList books={books} />;
   }
