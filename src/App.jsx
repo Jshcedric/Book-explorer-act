@@ -1,10 +1,12 @@
 import "./App.css";
+import SearchBar from "./components/SearchBar.jsx";
+import InitialState from "./components/InitialState.jsx";
 
 /**
- * PHASE 1 — project setup + visual direction only.
- * The search bar, results grid, and states arrive in later phases.
- * This shell exists so the typography, color, and spacing choices
- * can be reviewed before any functionality is built on top of them.
+ * PHASE 2 — full visual interface, no API wiring yet.
+ * The search bar is present but not controlled (see SearchBar.jsx);
+ * that lands in Phase 3. Right now App only ever renders InitialState —
+ * the loading/empty/error/results branches arrive in Phases 4–6.
  */
 function App() {
   return (
@@ -17,15 +19,16 @@ function App() {
           </div>
           <h1>The Stacks</h1>
           <p>A quiet corner of the internet for finding your next book.</p>
+
+          <div className="site-header__search">
+            <SearchBar />
+          </div>
         </div>
       </header>
 
-      <p className="preview-note">
-        <strong>Phase 1 preview.</strong> This confirms the look and feel —
-        paper background, library-green ink, brass accents, and the
-        Fraunces / Source Serif 4 / IBM Plex Mono type system. The search
-        bar and results grid come next, in Phase 2.
-      </p>
+      <main className="results-area">
+        <InitialState />
+      </main>
     </div>
   );
 }
