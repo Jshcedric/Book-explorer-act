@@ -13,7 +13,8 @@
   --paper-card: #faf6ea;    /* index card surface, a shade lighter than paper */
   --ink: #1f3b2e;           /* deep library green — primary text + headings */
   --ink-soft: #4a5f52;      /* muted green — secondary text */
-  --brass: #a9772f;         /* brass hardware accent — links, focus, tags */
+  --brass: #a9772f;         /* brass hardware accent — icons, borders, hover fills */
+  --brass-text: #8a5e28;    /* darker gold — used wherever brass appears as small text, for AA contrast */
   --brass-dim: #c99a52;     /* lighter brass for subtle fills/borders */
   --burgundy: #7c2f2f;      /* book-cloth red — errors, second accent */
   --line: #d9cfb2;          /* hairline rule / card edge, aged paper tone */
@@ -80,7 +81,7 @@ p {
 }
 
 a {
-  color: var(--brass);
+  color: var(--brass-text);
 }
 
 button {
@@ -100,6 +101,11 @@ button {
 :focus-visible {
   outline: 2px solid var(--brass);
   outline-offset: 2px;
+}
+
+::selection {
+  background: var(--brass-dim);
+  color: var(--ink);
 }
 
 @media (prefers-reduced-motion: reduce) {

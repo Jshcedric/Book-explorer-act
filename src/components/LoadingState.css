@@ -1,7 +1,7 @@
 .loading-state__message {
   text-align: center;
   margin-bottom: var(--space-3);
-  color: var(--brass);
+  color: var(--brass-text);
 }
 
 .skeleton-card {

@@ -38,7 +38,7 @@
   font-size: 0.85rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 0.7rem 1.4rem;
+  padding: 0.85rem 1.5rem;
   border-radius: var(--radius-card);
   cursor: pointer;
   transition: background-color 0.15s ease, color 0.15s ease;

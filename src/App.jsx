@@ -7,7 +7,7 @@ import LoadingState from "./components/LoadingState.jsx";
 import EmptyState from "./components/EmptyState.jsx";
 import ErrorState from "./components/ErrorState.jsx";
 import BookDetails from "./components/BookDetails.jsx";
-import { MIN_SEARCH_LENGTH, searchBooks } from "./services/bookApi.js";
+import { searchBooks } from "./services/bookApi.js";
 
 /**
  * PHASE 7 — clicking a book opens a details modal.
@@ -30,27 +30,25 @@ function App() {
   useEffect(() => {
     if (!submittedQuery) return;
 
-    // Cancels an older request when the query changes or the component unmounts.
-    const controller = new AbortController();
+    // Guards against a slow earlier request overwriting a faster later one.
+    let cancelled = false;
 
     async function runSearch() {
       setIsLoading(true);
       setApiError("");
 
       try {
-        const results = await searchBooks(submittedQuery, {
-          signal: controller.signal,
-        });
-        if (!controller.signal.aborted) {
+        const results = await searchBooks(submittedQuery);
+        if (!cancelled) {
           setBooks(results);
         }
       } catch (err) {
-        if (!controller.signal.aborted) {
+        if (!cancelled) {
           setApiError(err.message);
           setBooks([]);
         }
       } finally {
-        if (!controller.signal.aborted) {
+        if (!cancelled) {
           setIsLoading(false);
         }
       }
@@ -59,7 +57,7 @@ function App() {
     runSearch();
 
     return () => {
-      controller.abort();
+      cancelled = true;
     };
   }, [submittedQuery, retryToken]);
 
@@ -71,18 +69,8 @@ function App() {
       return;
     }
 
-    if (trimmed.length < MIN_SEARCH_LENGTH) {
-      setSearchError(`Enter at least ${MIN_SEARCH_LENGTH} characters to search.`);
-      return;
-    }
-
     setSearchError("");
     setSubmittedQuery(trimmed);
-  }
-
-  function handleQueryChange(value) {
-    setQuery(value);
-    if (searchError) setSearchError("");
   }
 
   function handleRetry() {
@@ -112,7 +100,7 @@ function App() {
           <div className="site-header__search">
             <SearchBar
               query={query}
-              onQueryChange={handleQueryChange}
+              onQueryChange={setQuery}
               onSubmit={handleSearchSubmit}
               error={searchError}
             />
