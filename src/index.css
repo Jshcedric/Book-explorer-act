@@ -1,0 +1,111 @@
+/* ==========================================================================
+   THE STACKS — design tokens
+   Direction: a modern reading room / library card-catalog, not a generic
+   "tech app" search page. Warm paper surfaces, deep library-green ink,
+   brass hardware accents, and a mono "catalog number" utility face for
+   metadata (years, edition counts). See src/components for the signature
+   index-card treatment applied to each book result.
+   ========================================================================== */
+
+:root {
+  /* ---- color: named + purposeful, not a generic palette ---- */
+  --paper: #f2ecdd;         /* room background — warm, slightly aged paper */
+  --paper-card: #faf6ea;    /* index card surface, a shade lighter than paper */
+  --ink: #1f3b2e;           /* deep library green — primary text + headings */
+  --ink-soft: #4a5f52;      /* muted green — secondary text */
+  --brass: #a9772f;         /* brass hardware accent — links, focus, tags */
+  --brass-dim: #c99a52;     /* lighter brass for subtle fills/borders */
+  --burgundy: #7c2f2f;      /* book-cloth red — errors, second accent */
+  --line: #d9cfb2;          /* hairline rule / card edge, aged paper tone */
+  --line-strong: #c3b591;
+  --shadow: rgba(31, 59, 46, 0.12);
+
+  /* ---- type ---- */
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* ---- scale ---- */
+  --space-1: 0.4rem;
+  --space-2: 0.75rem;
+  --space-3: 1.25rem;
+  --space-4: 2rem;
+  --space-5: 3.25rem;
+  --space-6: 5rem;
+
+  --radius-card: 3px; /* index cards are almost square-cornered, not app-rounded */
+  --radius-pill: 999px;
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--paper);
+  /* faint fibrous paper texture instead of a flat fill */
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(31, 59, 46, 0.035) 0, transparent 45%),
+    radial-gradient(circle at 80% 60%, rgba(169, 119, 47, 0.045) 0, transparent 40%);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--ink);
+}
+
+p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+a {
+  color: var(--brass);
+}
+
+button {
+  font-family: inherit;
+}
+
+/* utility: catalog-style small caps label used for eyebrows / metadata */
+.catalog-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* visible keyboard focus everywhere — brass ring, not a browser default */
+:focus-visible {
+  outline: 2px solid var(--brass);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
