@@ -6,10 +6,12 @@ import BookList from "./components/BookList.jsx";
 import LoadingState from "./components/LoadingState.jsx";
 import EmptyState from "./components/EmptyState.jsx";
 import ErrorState from "./components/ErrorState.jsx";
+import BookDetails from "./components/BookDetails.jsx";
 import { searchBooks } from "./services/bookApi.js";
 
 /**
- * PHASE 6 — polished loading, empty, and error states.
+ * PHASE 7 — clicking a book opens a details modal.
+ * `selectedBook` holds the book to show; closing sets it back to null.
  * `retryToken` exists purely so the "Try again" button can re-run the
  * exact same search: bumping it re-triggers the effect below even
  * though `submittedQuery` itself hasn't changed.
@@ -19,6 +21,7 @@ function App() {
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [searchError, setSearchError] = useState("");
   const [retryToken, setRetryToken] = useState(0);
+  const [selectedBook, setSelectedBook] = useState(null);
 
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -80,7 +83,7 @@ function App() {
     if (apiError) return <ErrorState message={apiError} onRetry={handleRetry} />;
     if (books.length === 0) return <EmptyState query={submittedQuery} />;
 
-    return <BookList books={books} />;
+    return <BookList books={books} onSelectBook={setSelectedBook} />;
   }
 
   return (
@@ -106,6 +109,10 @@ function App() {
       </header>
 
       <main className="results-area">{renderResults()}</main>
+
+      {selectedBook && (
+        <BookDetails book={selectedBook} onClose={() => setSelectedBook(null)} />
+      )}
     </div>
   );
 }

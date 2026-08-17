@@ -5,11 +5,23 @@ import "./BookCard.css";
  * Handles the case where cover_i is missing from the API response by
  * falling back to a drawn placeholder instead of a broken <img>.
  */
-function BookCard({ book }) {
+function BookCard({ book, onSelect }) {
   const { title, author, firstPublishYear, coverUrl } = book;
 
   return (
-    <article className="book-card">
+    <article
+      className="book-card"
+      role="button"
+      tabIndex={0}
+      onClick={() => onSelect(book)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onSelect(book);
+        }
+      }}
+      aria-label={`View details for ${title}`}
+    >
       <span className="book-card__tab" aria-hidden="true" />
 
       <div className="book-card__cover">
