@@ -25,13 +25,14 @@
   --on-accent: #fffaf7;     /* near-white text placed on top of brass/burgundy fills */
 
   /* ---- type ---- */
-  /* Poppins: a bold, rounded geometric sans for headings — friendly and
-     energetic rather than literary. Inter: a clean, highly-legible sans
-     for body copy, tuned for UI text at small sizes. IBM Plex Mono stays
-     as the small "eyebrow" label face for a bit of distinct texture. */
-  --font-display: "Poppins", -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* Plus Jakarta Sans: a normal, clean, friendly sans for headings and
+     for the small eyebrow/label text (genre chips, "Browse by genre",
+     year stamps) — distinctive through weight, size, and letter-spacing
+     rather than a coder-style monospace face, which read too techy for
+     a book catalog. Inter stays for body copy. */
+  --font-display: "Plus Jakarta Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-body: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-mono: "Plus Jakarta Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
 
   /* ---- scale ---- */
   --space-1: 0.4rem;
@@ -174,7 +175,8 @@ button {
 .catalog-label {
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  letter-spacing: 0.14em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-soft);
 }
