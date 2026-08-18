@@ -69,6 +69,20 @@
   animation: results-fade-in 0.2s ease;
 }
 
+.results-heading {
+  margin-bottom: var(--space-3);
+}
+
+.results-heading .catalog-label {
+  display: block;
+  margin-bottom: var(--space-1);
+}
+
+.results-heading h2 {
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  text-transform: capitalize;
+}
+
 @keyframes results-fade-in {
   from {
     opacity: 0;

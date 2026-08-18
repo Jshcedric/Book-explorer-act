@@ -43,7 +43,7 @@ function InitialState({ recommendedBooks, isLoadingRecommended, onSelectBook, on
               key={genre.subject}
               type="button"
               className="genre-chip"
-              onClick={() => onSelectGenre(genre.subject)}
+              onClick={() => onSelectGenre(genre)}
             >
               {genre.label}
             </button>

@@ -146,16 +146,28 @@ function App() {
     }
 
     setSearchError("");
-    setSearchTrigger((prev) => ({ type: "search", text: trimmed, attempt: (prev?.attempt ?? 0) + 1 }));
+    setSearchTrigger((prev) => ({
+      type: "search",
+      text: trimmed,
+      label: trimmed,
+      attempt: (prev?.attempt ?? 0) + 1,
+    }));
   }
 
   // Genre chips on the initial screen reuse the same trigger/effect
   // machinery as a text search, just tagged "genre" and fed a subject
-  // slug instead of the free-text query.
+  // slug instead of the free-text query. `genre.subject` (e.g.
+  // "science_fiction") is what the API needs; `genre.label` (e.g.
+  // "Science Fiction") is what gets shown to the user.
   function handleGenreSelect(genre) {
     setQuery("");
     setSearchError("");
-    setSearchTrigger((prev) => ({ type: "genre", text: genre, attempt: (prev?.attempt ?? 0) + 1 }));
+    setSearchTrigger((prev) => ({
+      type: "genre",
+      text: genre.subject,
+      label: genre.label,
+      attempt: (prev?.attempt ?? 0) + 1,
+    }));
   }
 
   function handleRetry() {
@@ -187,9 +199,19 @@ function App() {
     }
     if (isLoading) return <LoadingState />;
     if (apiError) return <ErrorState message={apiError} onRetry={handleRetry} />;
-    if (books.length === 0) return <EmptyState query={searchTrigger.text} />;
+    if (books.length === 0) return <EmptyState query={searchTrigger.label} />;
 
-    return <BookList books={books} onSelectBook={setSelectedBook} />;
+    return (
+      <>
+        <div className="results-heading">
+          <span className="catalog-label">
+            {searchTrigger.type === "genre" ? "Browsing" : "Search results"}
+          </span>
+          <h2>{searchTrigger.label}</h2>
+        </div>
+        <BookList books={books} onSelectBook={setSelectedBook} />
+      </>
+    );
   }
 
   return (
