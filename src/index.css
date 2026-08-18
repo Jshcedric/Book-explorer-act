@@ -47,6 +47,9 @@
 html,
 body {
   height: 100%;
+  /* Reserves scrollbar space even when overflow is toggled (e.g. modal
+     open/close), so the page doesn't visibly shift width and feel janky. */
+  scrollbar-gutter: stable;
 }
 
 body {
