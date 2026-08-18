@@ -197,10 +197,6 @@ function App() {
       <header className="site-header">
         <div className="site-header__inner">
           <div className="site-header__top">
-            <div className="site-header__mark">
-              <span className="site-header__mark-dot" aria-hidden="true" />
-              <span className="catalog-label">Open Library Catalog</span>
-            </div>
             <ThemeToggle theme={theme} onToggle={handleThemeToggle} />
           </div>
           <h1>
