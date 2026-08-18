@@ -1,5 +1,15 @@
 const SEARCH_URL = "https://openlibrary.org/search.json";
 const COVER_URL = "https://covers.openlibrary.org/b/id";
+const RECOMMENDED_SUBJECTS = [
+  "fiction",
+  "fantasy",
+  "mystery",
+  "science_fiction",
+  "romance",
+  "biography",
+  "history",
+  "young_adult",
+];
 
 /**
  * Turns one raw Open Library search "doc" into the shape the rest of
@@ -57,12 +67,19 @@ export function searchBooks(query) {
 
 /**
  * A small set of well-regarded books to show before the user has
- * searched, so the app doesn't open on an empty page. Pulled from the
- * "fiction" subject sorted by rating, rather than hardcoded titles, so
- * it's real catalog data rather than a fake-looking static list.
+ * searched, so the app doesn't open on an empty page. Picks a random
+ * subject and a random offset into that subject's top-rated results
+ * on every call, so reloading the page brings back a different set of
+ * books instead of the exact same eight every time — still real,
+ * well-rated catalog data, just not pinned to one fixed query.
  */
 export function getRecommendedBooks() {
-  const url = `${SEARCH_URL}?q=subject:fiction&sort=rating&limit=8`;
+  const subject = RECOMMENDED_SUBJECTS[Math.floor(Math.random() * RECOMMENDED_SUBJECTS.length)];
+  // Open Library sorts by rating, so hopping to a random page within
+  // the first few dozen results still keeps quality high while
+  // avoiding the exact same top-8 every reload.
+  const offset = Math.floor(Math.random() * 40);
+  const url = `${SEARCH_URL}?q=subject:${encodeURIComponent(subject)}&sort=rating&limit=8&offset=${offset}`;
   return fetchBooks(url);
 }
 
