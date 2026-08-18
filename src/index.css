@@ -23,8 +23,13 @@
   --shimmer: rgba(255, 255, 255, 0.85); /* skeleton loading highlight */
 
   /* ---- type ---- */
-  --font-display: "Playfair Display", "Iowan Old Style", Georgia, serif;
-  --font-body: "Newsreader", Georgia, "Times New Roman", serif;
+  /* Fraunces: a warm, characterful display serif for headings — has
+     real personality without tipping into "fussy." Literata: designed
+     by Google specifically for long-form on-screen reading (it's the
+     font behind Google Play Books), so body text stays comfortable
+     even in dense paragraphs — a natural fit for a book-catalog site. */
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-body: "Literata", Georgia, "Times New Roman", serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
   /* ---- scale ---- */
@@ -145,6 +150,7 @@ body {
 h1, h2, h3, h4 {
   font-family: var(--font-display);
   font-weight: 700;
+  font-optical-sizing: auto;
   letter-spacing: -0.01em;
   margin: 0;
   color: var(--ink);
