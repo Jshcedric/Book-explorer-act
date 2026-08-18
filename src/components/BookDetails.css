@@ -1,7 +1,7 @@
 .book-details-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(26, 46, 34, 0.5);
+  background: rgba(20, 14, 30, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,7 +18,7 @@
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 40px -16px rgba(26, 46, 34, 0.3);
+  box-shadow: 0 24px 48px -16px rgba(20, 14, 30, 0.35);
   animation: rise-in 0.14s ease-out;
   will-change: transform, opacity;
 }
@@ -95,7 +95,7 @@
 }
 
 .book-details__author {
-  font-style: italic;
+  font-weight: 500;
   color: var(--ink-soft);
   margin-bottom: var(--space-3);
 }
@@ -105,7 +105,7 @@
   gap: var(--space-4);
   margin: 0 0 var(--space-3);
   padding-top: var(--space-2);
-  border-top: 1px dashed var(--line-strong);
+  border-top: 1px solid var(--line);
 }
 
 .book-details__meta dt {
@@ -124,7 +124,7 @@
 
 .book-details__subjects {
   padding-top: var(--space-2);
-  border-top: 1px dashed var(--line-strong);
+  border-top: 1px solid var(--line);
 }
 
 .book-details__tags {
@@ -137,9 +137,10 @@
 .book-details__tag {
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  padding: 0.3rem 0.6rem;
+  padding: 0.3rem 0.7rem;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--brass-dim);
+  border: none;
+  background: var(--brass-dim);
   color: var(--brass-text);
 }
 

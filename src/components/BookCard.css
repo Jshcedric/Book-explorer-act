@@ -12,12 +12,12 @@
 }
 
 .book-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--brass-dim);
-  box-shadow: 0 14px 28px -18px var(--shadow);
+  transform: translateY(-4px);
+  border-color: var(--brass);
+  box-shadow: 0 18px 32px -16px var(--shadow);
 }
 
-/* the little die-cut tab along the top edge, like a filed index card */
+/* small accent pill peeking from the top edge of each card */
 .book-card__tab {
   position: absolute;
   top: 0;
@@ -25,7 +25,7 @@
   width: 34px;
   height: 6px;
   background: var(--brass);
-  border-radius: 0 0 2px 2px;
+  border-radius: 0 0 var(--radius-pill) var(--radius-pill);
 }
 
 .book-card__cover {
@@ -74,7 +74,7 @@
 }
 
 .book-card__author {
-  font-style: italic;
+  font-weight: 500;
   color: var(--ink-soft);
   font-size: 0.92rem;
 }

@@ -1,35 +1,36 @@
 /* ==========================================================================
    THE STACKS — design tokens
-   Direction: a modern reading room / library card-catalog, not a generic
-   "tech app" search page. A warm gold accent and a mono "catalog number"
-   utility face carry through both light and dark themes. See
-   src/components for the signature index-card treatment applied to
-   each book result.
+   Direction: a bold, energetic reading-community app — closer to
+   Wattpad than a museum reading room. Vivid orange + hot-pink accents,
+   rounded cards, a friendly geometric sans for headings and a clean
+   sans for body copy. See src/components for how these tokens drive
+   every surface — nothing about structure or behavior changed here,
+   only the look.
    ========================================================================== */
 
 :root {
   /* ---- color: named + purposeful, not a generic palette ---- */
-  --paper: #eff2ec;         /* room background — soft sage-white */
-  --paper-card: #ffffff;    /* index cards sit crisp and white against the paper */
-  --ink: #1a2e22;           /* deep forest ink — primary text + headings */
-  --ink-soft: #52695c;      /* muted green — secondary text */
-  --brass: #b8863e;         /* warm gold accent — icons, borders, hover fills */
-  --brass-text: #8f5f1e;    /* darker gold — used wherever brass appears as small text, for AA contrast */
-  --brass-dim: #d9ad6b;     /* lighter gold for subtle fills/borders */
-  --burgundy: #7c2a2a;      /* book-cloth red — errors, second accent */
-  --line: #dde3d8;          /* hairline rule / card edge */
-  --line-strong: #c5cec0;
-  --shadow: rgba(26, 46, 34, 0.14);
+  --paper: #fff9f6;         /* room background — warm off-white */
+  --paper-card: #ffffff;    /* cards sit crisp and white against the paper */
+  --ink: #1c1626;           /* near-black plum — primary text + headings */
+  --ink-soft: #6f6a80;      /* muted slate-purple — secondary text */
+  --brass: #ff5722;         /* vivid orange accent — buttons, icons, hover fills */
+  --brass-text: #dd4310;    /* darker orange — used wherever brass appears as small text, for AA contrast */
+  --brass-dim: #ffdccb;     /* light peach for subtle fills/borders */
+  --burgundy: #ef3f6b;      /* hot pink-red — errors, second accent */
+  --line: #f1eef2;          /* hairline rule / card edge */
+  --line-strong: #e2dee6;
+  --shadow: rgba(28, 22, 38, 0.16);
   --shimmer: rgba(255, 255, 255, 0.85); /* skeleton loading highlight */
+  --on-accent: #fffaf7;     /* near-white text placed on top of brass/burgundy fills */
 
   /* ---- type ---- */
-  /* Fraunces: a warm, characterful display serif for headings — has
-     real personality without tipping into "fussy." Literata: designed
-     by Google specifically for long-form on-screen reading (it's the
-     font behind Google Play Books), so body text stays comfortable
-     even in dense paragraphs — a natural fit for a book-catalog site. */
-  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
-  --font-body: "Literata", Georgia, "Times New Roman", serif;
+  /* Poppins: a bold, rounded geometric sans for headings — friendly and
+     energetic rather than literary. Inter: a clean, highly-legible sans
+     for body copy, tuned for UI text at small sizes. IBM Plex Mono stays
+     as the small "eyebrow" label face for a bit of distinct texture. */
+  --font-display: "Poppins", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-body: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
   /* ---- scale ---- */
@@ -40,29 +41,29 @@
   --space-5: 3.25rem;
   --space-6: 5rem;
 
-  --radius-card: 3px; /* index cards are almost square-cornered, not app-rounded */
+  --radius-card: 16px; /* rounded, modern app cards */
   --radius-pill: 999px;
 
   color-scheme: light;
 }
 
 /* Dark theme — same roles, inverted surfaces. Applied via a data-theme
-   attribute on <html>, set by ThemeToggle. Gold stays gold (it already
-   reads well on dark), but text-safe brass flips to a *lighter* gold
-   since the contrast problem reverses on a dark background. */
+   attribute on <html>, set by ThemeToggle. Orange runs brighter on dark
+   so it still pops against the deep plum-black background. */
 :root[data-theme="dark"] {
-  --paper: #141f19;
-  --paper-card: #1c2b23;
-  --ink: #eae5d8;
-  --ink-soft: #a3b5a8;
-  --brass: #d9a857;
-  --brass-text: #e6bd73;
-  --brass-dim: #8c6530;
-  --burgundy: #e0908f;
-  --line: #2c3c33;
-  --line-strong: #3c4f43;
-  --shadow: rgba(0, 0, 0, 0.4);
+  --paper: #17121e;
+  --paper-card: #221b2c;
+  --ink: #f5f1fa;
+  --ink-soft: #b3aac4;
+  --brass: #ff7a45;
+  --brass-text: #ff9466;
+  --brass-dim: #4a2a1f;
+  --burgundy: #ff5c86;
+  --line: #2e2638;
+  --line-strong: #3c3248;
+  --shadow: rgba(0, 0, 0, 0.55);
   --shimmer: rgba(255, 255, 255, 0.12);
+  --on-accent: #1c1626;
 
   color-scheme: dark;
 }
@@ -125,10 +126,10 @@ body {
 body {
   margin: 0;
   background-color: var(--paper);
-  /* faint warm glow instead of a flat fill */
+  /* soft, energetic glow instead of a flat fill */
   background-image:
-    radial-gradient(circle at 15% 15%, rgba(184, 134, 62, 0.06) 0, transparent 45%),
-    radial-gradient(circle at 85% 65%, rgba(26, 46, 34, 0.05) 0, transparent 42%);
+    radial-gradient(circle at 15% 15%, rgba(255, 87, 34, 0.07) 0, transparent 45%),
+    radial-gradient(circle at 85% 65%, rgba(239, 63, 107, 0.06) 0, transparent 42%);
   color: var(--ink);
   font-family: var(--font-body);
   font-size: 1.05rem;
