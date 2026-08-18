@@ -14,11 +14,18 @@
   margin: 0 auto;
 }
 
+.site-header__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
 .site-header__mark {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  margin-bottom: var(--space-2);
 }
 
 .site-header__mark-dot {

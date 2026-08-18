@@ -8,6 +8,7 @@ import EmptyState from "./components/EmptyState.jsx";
 import ErrorState from "./components/ErrorState.jsx";
 import BookDetails from "./components/BookDetails.jsx";
 import ScrollToTopButton from "./components/ScrollToTopButton.jsx";
+import ThemeToggle from "./components/ThemeToggle.jsx";
 import { searchBooks, getRecommendedBooks } from "./services/bookApi.js";
 
 /**
@@ -22,6 +23,21 @@ function App() {
   const [searchTrigger, setSearchTrigger] = useState(null); // { text, attempt }
   const [searchError, setSearchError] = useState("");
   const [selectedBook, setSelectedBook] = useState(null);
+
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem("theme");
+    if (saved === "light" || saved === "dark") return saved;
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  function handleThemeToggle() {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  }
 
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -128,9 +144,12 @@ function App() {
     <div className="app-shell">
       <header className="site-header">
         <div className="site-header__inner">
-          <div className="site-header__mark">
-            <span className="site-header__mark-dot" aria-hidden="true" />
-            <span className="catalog-label">Open Library Catalog</span>
+          <div className="site-header__top">
+            <div className="site-header__mark">
+              <span className="site-header__mark-dot" aria-hidden="true" />
+              <span className="catalog-label">Open Library Catalog</span>
+            </div>
+            <ThemeToggle theme={theme} onToggle={handleThemeToggle} />
           </div>
           <h1>The Stacks</h1>
           <p>A quiet corner of the internet for finding your next book.</p>

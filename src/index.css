@@ -1,25 +1,26 @@
 /* ==========================================================================
    THE STACKS — design tokens
    Direction: a modern reading room / library card-catalog, not a generic
-   "tech app" search page. Warm ivory surfaces, deep forest ink, a warm
-   gold accent, and a mono "catalog number" utility face for metadata
-   (years, edition counts). See src/components for the signature
-   index-card treatment applied to each book result.
+   "tech app" search page. A warm gold accent and a mono "catalog number"
+   utility face carry through both light and dark themes. See
+   src/components for the signature index-card treatment applied to
+   each book result.
    ========================================================================== */
 
 :root {
   /* ---- color: named + purposeful, not a generic palette ---- */
-  --paper: #f4efe6;         /* room background — warm ivory */
-  --paper-card: #ffffff;    /* index cards sit crisp and white against the ivory */
+  --paper: #eff2ec;         /* room background — soft sage-white */
+  --paper-card: #ffffff;    /* index cards sit crisp and white against the paper */
   --ink: #1a2e22;           /* deep forest ink — primary text + headings */
   --ink-soft: #52695c;      /* muted green — secondary text */
   --brass: #b8863e;         /* warm gold accent — icons, borders, hover fills */
   --brass-text: #8f5f1e;    /* darker gold — used wherever brass appears as small text, for AA contrast */
   --brass-dim: #d9ad6b;     /* lighter gold for subtle fills/borders */
   --burgundy: #7c2a2a;      /* book-cloth red — errors, second accent */
-  --line: #e2d9c8;          /* hairline rule / card edge, aged paper tone */
-  --line-strong: #cbbfa4;
+  --line: #dde3d8;          /* hairline rule / card edge */
+  --line-strong: #c5cec0;
   --shadow: rgba(26, 46, 34, 0.14);
+  --shimmer: rgba(255, 255, 255, 0.85); /* skeleton loading highlight */
 
   /* ---- type ---- */
   --font-display: "Playfair Display", "Iowan Old Style", Georgia, serif;
@@ -40,8 +41,30 @@
   color-scheme: light;
 }
 
+/* Dark theme — same roles, inverted surfaces. Applied via a data-theme
+   attribute on <html>, set by ThemeToggle. Gold stays gold (it already
+   reads well on dark), but text-safe brass flips to a *lighter* gold
+   since the contrast problem reverses on a dark background. */
+:root[data-theme="dark"] {
+  --paper: #141f19;
+  --paper-card: #1c2b23;
+  --ink: #eae5d8;
+  --ink-soft: #a3b5a8;
+  --brass: #d9a857;
+  --brass-text: #e6bd73;
+  --brass-dim: #8c6530;
+  --burgundy: #e0908f;
+  --line: #2c3c33;
+  --line-strong: #3c4f43;
+  --shadow: rgba(0, 0, 0, 0.4);
+  --shimmer: rgba(255, 255, 255, 0.12);
+
+  color-scheme: dark;
+}
+
 * {
   box-sizing: border-box;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 html,
@@ -63,6 +86,7 @@ body {
   font-family: var(--font-body);
   font-size: 1.05rem;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 #root {
