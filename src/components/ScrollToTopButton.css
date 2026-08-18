@@ -1,0 +1,52 @@
+.scroll-top-button {
+  position: fixed;
+  bottom: var(--space-4);
+  right: var(--space-4);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper-card);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 24px -10px var(--shadow);
+  z-index: 40;
+  animation: scroll-btn-in 0.15s ease-out;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.scroll-top-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.scroll-top-button:hover {
+  background: var(--brass);
+  border-color: var(--brass);
+  transform: translateY(-2px);
+}
+
+@keyframes scroll-btn-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (max-width: 560px) {
+  .scroll-top-button {
+    bottom: var(--space-3);
+    right: var(--space-3);
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-top-button {
+    animation: none;
+  }
+}

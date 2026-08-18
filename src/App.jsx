@@ -7,7 +7,8 @@ import LoadingState from "./components/LoadingState.jsx";
 import EmptyState from "./components/EmptyState.jsx";
 import ErrorState from "./components/ErrorState.jsx";
 import BookDetails from "./components/BookDetails.jsx";
-import { searchBooks } from "./services/bookApi.js";
+import ScrollToTopButton from "./components/ScrollToTopButton.jsx";
+import { searchBooks, getRecommendedBooks } from "./services/bookApi.js";
 
 /**
  * PHASE 9 — bugfix found during testing: pressing "Search" again with the
@@ -25,6 +26,31 @@ function App() {
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState("");
+
+  const [recommendedBooks, setRecommendedBooks] = useState([]);
+  const [isLoadingRecommended, setIsLoadingRecommended] = useState(true);
+
+  // Runs once on mount to populate the "before you search" screen —
+  // deliberately silent on failure (just leaves the list empty) since
+  // it's a nice-to-have, not something that should show an error state.
+  useEffect(() => {
+    let cancelled = false;
+
+    getRecommendedBooks()
+      .then((results) => {
+        if (!cancelled) setRecommendedBooks(results);
+      })
+      .catch(() => {
+        // Recommendations are optional polish — fail quietly.
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingRecommended(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!searchTrigger) return;
@@ -82,7 +108,15 @@ function App() {
   }
 
   function renderResults() {
-    if (!searchTrigger) return <InitialState />;
+    if (!searchTrigger) {
+      return (
+        <InitialState
+          recommendedBooks={recommendedBooks}
+          isLoadingRecommended={isLoadingRecommended}
+          onSelectBook={setSelectedBook}
+        />
+      );
+    }
     if (isLoading) return <LoadingState />;
     if (apiError) return <ErrorState message={apiError} onRetry={handleRetry} />;
     if (books.length === 0) return <EmptyState query={searchTrigger.text} />;
@@ -117,6 +151,8 @@ function App() {
       {selectedBook && (
         <BookDetails book={selectedBook} onClose={() => setSelectedBook(null)} />
       )}
+
+      <ScrollToTopButton />
     </div>
   );
 }

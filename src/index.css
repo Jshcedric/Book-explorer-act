@@ -9,8 +9,8 @@
 
 :root {
   /* ---- color: named + purposeful, not a generic palette ---- */
-  --paper: #f2ecdd;         /* room background — warm, slightly aged paper */
-  --paper-card: #faf6ea;    /* index card surface, a shade lighter than paper */
+  --paper: #edeae0;         /* room background — cooler, more neutral linen tone */
+  --paper-card: #f9f7f0;    /* index card surface, a shade lighter than paper */
   --ink: #1f3b2e;           /* deep library green — primary text + headings */
   --ink-soft: #4a5f52;      /* muted green — secondary text */
   --brass: #a9772f;         /* brass hardware accent — icons, borders, hover fills */

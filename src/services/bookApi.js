@@ -21,13 +21,11 @@ function mapDocToBook(doc) {
 }
 
 /**
- * Searches Open Library for books matching `query`.
- * Throws an Error with a friendly message on network failure or a
- * non-OK response, so callers can catch it and show it directly.
+ * Shared fetch + error handling for every Open Library request in this
+ * file. Throws an Error with a friendly message on network failure or
+ * a non-OK response, so callers can catch it and show it directly.
  */
-export async function searchBooks(query) {
-  const url = `${SEARCH_URL}?q=${encodeURIComponent(query)}`;
-
+async function fetchBooks(url) {
   let response;
   try {
     response = await fetch(url);
@@ -47,4 +45,23 @@ export async function searchBooks(query) {
   const docs = data.docs || [];
 
   return docs.map(mapDocToBook);
+}
+
+/**
+ * Searches Open Library for books matching `query`.
+ */
+export function searchBooks(query) {
+  const url = `${SEARCH_URL}?q=${encodeURIComponent(query)}`;
+  return fetchBooks(url);
+}
+
+/**
+ * A small set of well-regarded books to show before the user has
+ * searched, so the app doesn't open on an empty page. Pulled from the
+ * "fiction" subject sorted by rating, rather than hardcoded titles, so
+ * it's real catalog data rather than a fake-looking static list.
+ */
+export function getRecommendedBooks() {
+  const url = `${SEARCH_URL}?q=subject:fiction&sort=rating&limit=8`;
+  return fetchBooks(url);
 }
