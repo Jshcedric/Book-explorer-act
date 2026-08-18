@@ -1,9 +1,9 @@
 import "./InitialState.css";
 
 /**
- * Shown before the user has searched. Phase 6 will place LoadingState,
- * EmptyState, and ErrorState alongside this using the same conditional
- * rendering slot in App.jsx.
+ * Shown before the user has submitted their first search. App.jsx swaps
+ * this out for LoadingState, ErrorState, EmptyState, or the BookList
+ * grid once a search has been submitted.
  */
 function InitialState() {
   return (

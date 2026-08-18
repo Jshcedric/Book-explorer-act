@@ -1,12 +1,17 @@
+import { useState } from "react";
 import "./BookCard.css";
 
 /**
  * Pure presentational component — receives everything via props.
- * Handles the case where cover_i is missing from the API response by
- * falling back to a drawn placeholder instead of a broken <img>.
+ * Handles two different "no cover" cases: no cover_i from the API at
+ * all, and a cover_i that exists but whose image 404s (this happens
+ * fairly often with Open Library) — both fall back to the same
+ * drawn placeholder instead of a broken-image icon.
  */
 function BookCard({ book, onSelect }) {
   const { title, author, firstPublishYear, coverUrl } = book;
+  const [imageFailed, setImageFailed] = useState(false);
+  const showPlaceholder = !coverUrl || imageFailed;
 
   return (
     <article
@@ -25,9 +30,7 @@ function BookCard({ book, onSelect }) {
       <span className="book-card__tab" aria-hidden="true" />
 
       <div className="book-card__cover">
-        {coverUrl ? (
-          <img src={coverUrl} alt={`Cover of ${title}`} loading="lazy" />
-        ) : (
+        {showPlaceholder ? (
           <div className="book-card__cover-placeholder" role="img" aria-label={`No cover available for ${title}`}>
             <svg viewBox="0 0 48 48" aria-hidden="true">
               <path
@@ -47,6 +50,13 @@ function BookCard({ book, onSelect }) {
               />
             </svg>
           </div>
+        ) : (
+          <img
+            src={coverUrl}
+            alt={`Cover of ${title}`}
+            loading="lazy"
+            onError={() => setImageFailed(true)}
+          />
         )}
       </div>
 

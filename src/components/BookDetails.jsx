@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./BookDetails.css";
 
 /**
@@ -8,6 +8,7 @@ import "./BookDetails.css";
  */
 function BookDetails({ book, onClose }) {
   const closeButtonRef = useRef(null);
+  const [imageFailed, setImageFailed] = useState(false);
 
   useEffect(() => {
     closeButtonRef.current?.focus();
@@ -48,8 +49,12 @@ function BookDetails({ book, onClose }) {
 
         <div className="book-details__content">
           <div className="book-details__cover">
-            {coverUrl ? (
-              <img src={coverUrl} alt={`Cover of ${title}`} />
+            {coverUrl && !imageFailed ? (
+              <img
+                src={coverUrl}
+                alt={`Cover of ${title}`}
+                onError={() => setImageFailed(true)}
+              />
             ) : (
               <div className="book-details__cover-placeholder" role="img" aria-label={`No cover available for ${title}`}>
                 <svg viewBox="0 0 48 48" aria-hidden="true">

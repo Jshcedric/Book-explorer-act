@@ -1,8 +1,6 @@
 # The Stacks — Book Search App
 
-A React book search app built on the Open Library API. Built phase by phase.
-
-**Status: Phase 1 — project setup + visual direction.**
+A React book search app built on the Open Library API.
 
 ## Run it locally
 
@@ -13,14 +11,25 @@ npm run dev
 
 Then open the URL Vite prints (usually `http://localhost:5173`).
 
-## What's here so far
+## Project structure
 
-- `src/App.jsx` — a small preview shell showing the header and type/color
-  direction. No search functionality yet — that starts in Phase 3.
-- `src/index.css` — the design token system (colors, fonts, spacing) that
-  every later component will use.
-- `src/App.css` — layout styles for the header shell.
-- `src/components/` — empty for now; `SearchBar`, `BookCard`, etc. arrive
-  in later phases.
-- `src/services/` — empty for now; the Open Library API function arrives
-  in Phase 4.
+- `src/App.jsx` — top-level state (search text, results, loading/error) and
+  the conditional rendering that switches between states.
+- `src/services/bookApi.js` — the Open Library API call and response mapping.
+- `src/components/`
+  - `SearchBar` — controlled search input with basic validation.
+  - `InitialState` — welcome screen shown before the first search.
+  - `LoadingState` — skeleton cards shown while fetching.
+  - `EmptyState` — shown when a search returns no results.
+  - `ErrorState` — shown on a failed request, with a retry button.
+  - `BookList` / `BookCard` — the results grid and individual cards.
+  - `BookDetails` — the modal shown when a book card is clicked.
+
+## Notes
+
+- No API key is required — Open Library's search endpoint is public.
+- If search ever errors immediately with "Couldn't reach Open Library,"
+  that means the browser itself can't reach openlibrary.org (network/DNS/
+  firewall issue) — check the browser console for the underlying error
+  and confirm `https://openlibrary.org/search.json?q=dune` loads directly
+  in a new tab.

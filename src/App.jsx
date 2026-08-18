@@ -10,17 +10,16 @@ import BookDetails from "./components/BookDetails.jsx";
 import { searchBooks } from "./services/bookApi.js";
 
 /**
- * PHASE 7 — clicking a book opens a details modal.
- * `selectedBook` holds the book to show; closing sets it back to null.
- * `retryToken` exists purely so the "Try again" button can re-run the
- * exact same search: bumping it re-triggers the effect below even
- * though `submittedQuery` itself hasn't changed.
+ * PHASE 9 — bugfix found during testing: pressing "Search" again with the
+ * exact same text after an error did nothing, because React bails out on
+ * an unchanged state value. `searchTrigger` bundles the query with an
+ * incrementing `attempt` counter, so every submit (even a repeat) and
+ * every retry reliably re-runs the effect below.
  */
 function App() {
   const [query, setQuery] = useState("");
-  const [submittedQuery, setSubmittedQuery] = useState("");
+  const [searchTrigger, setSearchTrigger] = useState(null); // { text, attempt }
   const [searchError, setSearchError] = useState("");
-  const [retryToken, setRetryToken] = useState(0);
   const [selectedBook, setSelectedBook] = useState(null);
 
   const [books, setBooks] = useState([]);
@@ -28,7 +27,7 @@ function App() {
   const [apiError, setApiError] = useState("");
 
   useEffect(() => {
-    if (!submittedQuery) return;
+    if (!searchTrigger) return;
 
     // Guards against a slow earlier request overwriting a faster later one.
     let cancelled = false;
@@ -38,7 +37,7 @@ function App() {
       setApiError("");
 
       try {
-        const results = await searchBooks(submittedQuery);
+        const results = await searchBooks(searchTrigger.text);
         if (!cancelled) {
           setBooks(results);
         }
@@ -59,7 +58,12 @@ function App() {
     return () => {
       cancelled = true;
     };
-  }, [submittedQuery, retryToken]);
+  }, [searchTrigger]);
+
+  function handleQueryChange(value) {
+    setQuery(value);
+    if (searchError) setSearchError("");
+  }
 
   function handleSearchSubmit() {
     const trimmed = query.trim();
@@ -70,18 +74,18 @@ function App() {
     }
 
     setSearchError("");
-    setSubmittedQuery(trimmed);
+    setSearchTrigger((prev) => ({ text: trimmed, attempt: (prev?.attempt ?? 0) + 1 }));
   }
 
   function handleRetry() {
-    setRetryToken((n) => n + 1);
+    setSearchTrigger((prev) => ({ ...prev, attempt: prev.attempt + 1 }));
   }
 
   function renderResults() {
-    if (!submittedQuery) return <InitialState />;
+    if (!searchTrigger) return <InitialState />;
     if (isLoading) return <LoadingState />;
     if (apiError) return <ErrorState message={apiError} onRetry={handleRetry} />;
-    if (books.length === 0) return <EmptyState query={submittedQuery} />;
+    if (books.length === 0) return <EmptyState query={searchTrigger.text} />;
 
     return <BookList books={books} onSelectBook={setSelectedBook} />;
   }
@@ -100,7 +104,7 @@ function App() {
           <div className="site-header__search">
             <SearchBar
               query={query}
-              onQueryChange={setQuery}
+              onQueryChange={handleQueryChange}
               onSubmit={handleSearchSubmit}
               error={searchError}
             />
