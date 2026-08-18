@@ -1,29 +1,29 @@
 /* ==========================================================================
    THE STACKS — design tokens
    Direction: a modern reading room / library card-catalog, not a generic
-   "tech app" search page. Warm paper surfaces, deep library-green ink,
-   brass hardware accents, and a mono "catalog number" utility face for
-   metadata (years, edition counts). See src/components for the signature
+   "tech app" search page. Warm ivory surfaces, deep forest ink, a warm
+   gold accent, and a mono "catalog number" utility face for metadata
+   (years, edition counts). See src/components for the signature
    index-card treatment applied to each book result.
    ========================================================================== */
 
 :root {
   /* ---- color: named + purposeful, not a generic palette ---- */
-  --paper: #edeae0;         /* room background — cooler, more neutral linen tone */
-  --paper-card: #f9f7f0;    /* index card surface, a shade lighter than paper */
-  --ink: #1f3b2e;           /* deep library green — primary text + headings */
-  --ink-soft: #4a5f52;      /* muted green — secondary text */
-  --brass: #a9772f;         /* brass hardware accent — icons, borders, hover fills */
-  --brass-text: #8a5e28;    /* darker gold — used wherever brass appears as small text, for AA contrast */
-  --brass-dim: #c99a52;     /* lighter brass for subtle fills/borders */
-  --burgundy: #7c2f2f;      /* book-cloth red — errors, second accent */
-  --line: #d9cfb2;          /* hairline rule / card edge, aged paper tone */
-  --line-strong: #c3b591;
-  --shadow: rgba(31, 59, 46, 0.12);
+  --paper: #f4efe6;         /* room background — warm ivory */
+  --paper-card: #ffffff;    /* index cards sit crisp and white against the ivory */
+  --ink: #1a2e22;           /* deep forest ink — primary text + headings */
+  --ink-soft: #52695c;      /* muted green — secondary text */
+  --brass: #b8863e;         /* warm gold accent — icons, borders, hover fills */
+  --brass-text: #8f5f1e;    /* darker gold — used wherever brass appears as small text, for AA contrast */
+  --brass-dim: #d9ad6b;     /* lighter gold for subtle fills/borders */
+  --burgundy: #7c2a2a;      /* book-cloth red — errors, second accent */
+  --line: #e2d9c8;          /* hairline rule / card edge, aged paper tone */
+  --line-strong: #cbbfa4;
+  --shadow: rgba(26, 46, 34, 0.14);
 
   /* ---- type ---- */
-  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
-  --font-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-display: "Playfair Display", "Iowan Old Style", Georgia, serif;
+  --font-body: "Newsreader", Georgia, "Times New Roman", serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
   /* ---- scale ---- */
@@ -55,12 +55,13 @@ body {
 body {
   margin: 0;
   background-color: var(--paper);
-  /* faint fibrous paper texture instead of a flat fill */
+  /* faint warm glow instead of a flat fill */
   background-image:
-    radial-gradient(circle at 20% 20%, rgba(31, 59, 46, 0.035) 0, transparent 45%),
-    radial-gradient(circle at 80% 60%, rgba(169, 119, 47, 0.045) 0, transparent 40%);
+    radial-gradient(circle at 15% 15%, rgba(184, 134, 62, 0.06) 0, transparent 45%),
+    radial-gradient(circle at 85% 65%, rgba(26, 46, 34, 0.05) 0, transparent 42%);
   color: var(--ink);
   font-family: var(--font-body);
+  font-size: 1.05rem;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -72,7 +73,7 @@ body {
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.01em;
   margin: 0;
   color: var(--ink);
@@ -80,7 +81,7 @@ h1, h2, h3, h4 {
 
 p {
   margin: 0;
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
 a {
