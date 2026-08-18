@@ -9,7 +9,7 @@ import ErrorState from "./components/ErrorState.jsx";
 import BookDetails from "./components/BookDetails.jsx";
 import ScrollToTopButton from "./components/ScrollToTopButton.jsx";
 import ThemeToggle from "./components/ThemeToggle.jsx";
-import { searchBooks, getRecommendedBooks } from "./services/bookApi.js";
+import { searchBooks, getRecommendedBooks, getBooksBySubject } from "./services/bookApi.js";
 
 /**
  * PHASE 9 — bugfix found during testing: pressing "Search" again with the
@@ -17,10 +17,14 @@ import { searchBooks, getRecommendedBooks } from "./services/bookApi.js";
  * an unchanged state value. `searchTrigger` bundles the query with an
  * incrementing `attempt` counter, so every submit (even a repeat) and
  * every retry reliably re-runs the effect below.
+ *
+ * PHASE 10 — `searchTrigger` grew a `type` field ("search" | "genre") so
+ * the same trigger/effect machinery can drive either a free-text search
+ * or a "browse by genre" click from the initial screen.
  */
 function App() {
   const [query, setQuery] = useState("");
-  const [searchTrigger, setSearchTrigger] = useState(null); // { text, attempt }
+  const [searchTrigger, setSearchTrigger] = useState(null); // { type, text, attempt }
   const [searchError, setSearchError] = useState("");
   const [selectedBook, setSelectedBook] = useState(null);
 
@@ -79,7 +83,10 @@ function App() {
       setApiError("");
 
       try {
-        const results = await searchBooks(searchTrigger.text);
+        const results =
+          searchTrigger.type === "genre"
+            ? await getBooksBySubject(searchTrigger.text)
+            : await searchBooks(searchTrigger.text);
         if (!cancelled) {
           setBooks(results);
         }
@@ -116,11 +123,32 @@ function App() {
     }
 
     setSearchError("");
-    setSearchTrigger((prev) => ({ text: trimmed, attempt: (prev?.attempt ?? 0) + 1 }));
+    setSearchTrigger((prev) => ({ type: "search", text: trimmed, attempt: (prev?.attempt ?? 0) + 1 }));
+  }
+
+  // Genre chips on the initial screen reuse the same trigger/effect
+  // machinery as a text search, just tagged "genre" and fed a subject
+  // slug instead of the free-text query.
+  function handleGenreSelect(genre) {
+    setQuery("");
+    setSearchError("");
+    setSearchTrigger((prev) => ({ type: "genre", text: genre, attempt: (prev?.attempt ?? 0) + 1 }));
   }
 
   function handleRetry() {
     setSearchTrigger((prev) => ({ ...prev, attempt: prev.attempt + 1 }));
+  }
+
+  // Clicking the "The Stacks" title acts as a home link — it clears any
+  // active search/genre/error state and returns to the initial screen.
+  function handleGoHome() {
+    setQuery("");
+    setSearchError("");
+    setApiError("");
+    setSearchTrigger(null);
+    setBooks([]);
+    setSelectedBook(null);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function renderResults() {
@@ -130,6 +158,7 @@ function App() {
           recommendedBooks={recommendedBooks}
           isLoadingRecommended={isLoadingRecommended}
           onSelectBook={setSelectedBook}
+          onSelectGenre={handleGenreSelect}
         />
       );
     }
@@ -151,7 +180,11 @@ function App() {
             </div>
             <ThemeToggle theme={theme} onToggle={handleThemeToggle} />
           </div>
-          <h1>The Stacks</h1>
+          <h1>
+            <button type="button" className="site-header__home-link" onClick={handleGoHome}>
+              The Stacks
+            </button>
+          </h1>
           <p>A quiet corner of the internet for finding your next book.</p>
 
           <div className="site-header__search">

@@ -65,3 +65,15 @@ export function getRecommendedBooks() {
   const url = `${SEARCH_URL}?q=subject:fiction&sort=rating&limit=8`;
   return fetchBooks(url);
 }
+
+/**
+ * Pulls a page of well-rated books for a single Open Library subject —
+ * powers the "browse by genre" chips on the initial screen. Reuses the
+ * same fetch/error/mapping pipeline as everything else, so a genre
+ * request behaves exactly like a search as far as the rest of the app
+ * is concerned.
+ */
+export function getBooksBySubject(subject) {
+  const url = `${SEARCH_URL}?q=subject:${encodeURIComponent(subject)}&sort=rating&limit=20`;
+  return fetchBooks(url);
+}
