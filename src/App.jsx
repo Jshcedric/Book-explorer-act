@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 import "./App.css";
 import SearchBar from "./components/SearchBar.jsx";
 import InitialState from "./components/InitialState.jsx";
@@ -40,7 +41,29 @@ function App() {
   }, [theme]);
 
   function handleThemeToggle() {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+    const next = theme === "dark" ? "light" : "dark";
+
+    // Previously every element on the page carried its own
+    // background/border/color transition, so flipping themes meant
+    // hundreds of book-card children animating independently at once —
+    // that's what actually read as "laggy". The View Transitions API
+    // instead takes a single before/after snapshot of the whole page
+    // and cross-fades between them as one GPU-composited animation, so
+    // it stays smooth no matter how many cards are on screen. Falls
+    // back to an instant (untransitioned) swap on unsupported browsers
+    // or when the user has reduced motion enabled.
+    const canAnimate =
+      typeof document.startViewTransition === "function" &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (!canAnimate) {
+      setTheme(next);
+      return;
+    }
+
+    document.startViewTransition(() => {
+      flushSync(() => setTheme(next));
+    });
   }
 
   const [books, setBooks] = useState([]);
