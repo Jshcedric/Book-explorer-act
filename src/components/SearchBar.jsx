@@ -16,7 +16,6 @@ function SearchBar({ query, onQueryChange, onSubmit, error }) {
   return (
     <form className="search-slip" onSubmit={handleSubmit} noValidate>
       <div className="search-slip__field">
-        <span className="catalog-label search-slip__label">Search the catalog</span>
         <input
           type="text"
           className="search-slip__input"
