@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import "./BookDetails.css";
 
 /**
@@ -10,7 +10,13 @@ function BookDetails({ book, onClose }) {
   const closeButtonRef = useRef(null);
   const [imageFailed, setImageFailed] = useState(false);
 
-  useEffect(() => {
+  // useLayoutEffect (not useEffect) so the scroll lock and focus move
+  // happen in the same paint as the modal mounting, before the browser
+  // shows anything. With a plain useEffect this ran a frame *after*
+  // the modal was already visible — the scrollbar disappearing and the
+  // page reflowing right after the fade-in read as a small stutter on
+  // every click. Doing it here means there's just one clean frame.
+  useLayoutEffect(() => {
     closeButtonRef.current?.focus();
 
     function handleKeyDown(e) {
