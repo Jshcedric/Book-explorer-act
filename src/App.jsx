@@ -1,5 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
-import { flushSync } from "react-dom";
+import { useEffect, useState } from "react";
 import "./App.css";
 import SearchBar from "./components/SearchBar.jsx";
 import InitialState from "./components/InitialState.jsx";
@@ -31,51 +30,6 @@ function App() {
   const [searchError, setSearchError] = useState("");
   const [selectedBook, setSelectedBook] = useState(null);
 
-  const [theme, setTheme] = useState(() => {
-    const saved = localStorage.getItem("theme");
-    if (saved === "light" || saved === "dark") return saved;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  });
-
-  // useLayoutEffect (not useEffect) is essential here: flushSync forces
-  // React's render + DOM commit to happen synchronously, but it does
-  // NOT flush plain useEffects — those still run a frame later. Since
-  // handleThemeToggle relies on flushSync to make the theme change
-  // "done" before the view-transition snapshot is taken, the actual
-  // data-theme flip has to live in a layout effect too. With a plain
-  // useEffect, the browser would snapshot the "after" state before the
-  // colors had actually changed, then apply the real change a frame
-  // later with no transition — that mismatch was the visible stutter.
-  useLayoutEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    localStorage.setItem("theme", theme);
-  }, [theme]);
-
-  function handleThemeToggle() {
-    const next = theme === "dark" ? "light" : "dark";
-
-    // Previously every element on the page carried its own
-    // background/border/color transition, so flipping themes meant
-    // hundreds of book-card children animating independently at once —
-    // that's what actually read as "laggy". The View Transitions API
-    // instead takes a single before/after snapshot of the whole page
-    // and cross-fades between them as one GPU-composited animation, so
-    // it stays smooth no matter how many cards are on screen. Falls
-    // back to an instant (untransitioned) swap on unsupported browsers
-    // or when the user has reduced motion enabled.
-    const canAnimate =
-      typeof document.startViewTransition === "function" &&
-      !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (!canAnimate) {
-      setTheme(next);
-      return;
-    }
-
-    document.startViewTransition(() => {
-      flushSync(() => setTheme(next));
-    });
-  }
 
   const [books, setBooks] = useState([]);
   const [totalResults, setTotalResults] = useState(0);
@@ -270,7 +224,7 @@ function App() {
       <header className="site-header">
         <div className="site-header__inner">
           <div className="site-header__top">
-            <ThemeToggle theme={theme} onToggle={handleThemeToggle} />
+            <ThemeToggle />
           </div>
           <h1>
             <button type="button" className="site-header__home-link" onClick={handleGoHome}>

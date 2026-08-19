@@ -80,8 +80,11 @@
    on every element at once was the original source of the theme-switch
    lag. */
 @supports not (view-transition-name: none) {
-  * {
-    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  body,
+  .site-header,
+  .book-card,
+  .theme-toggle {
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
   }
 }
 
@@ -90,7 +93,7 @@
 @supports (view-transition-name: none) {
   ::view-transition-old(root),
   ::view-transition-new(root) {
-    animation-duration: 0.22s;
+    animation-duration: 0.18s;
     animation-timing-function: ease;
     mix-blend-mode: normal;
   }

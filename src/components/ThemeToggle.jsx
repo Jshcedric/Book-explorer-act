@@ -1,13 +1,45 @@
+import { useState } from "react";
+import { flushSync } from "react-dom";
 import "./ThemeToggle.css";
 
-function ThemeToggle({ theme, onToggle }) {
+function getInitialTheme() {
+  const saved = localStorage.getItem("theme");
+  if (saved === "light" || saved === "dark") return saved;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function ThemeToggle() {
+  const [theme, setTheme] = useState(getInitialTheme);
   const isDark = theme === "dark";
+
+  function applyTheme(nextTheme) {
+    document.documentElement.dataset.theme = nextTheme;
+    localStorage.setItem("theme", nextTheme);
+    setTheme(nextTheme);
+  }
+
+  function handleToggle() {
+    const nextTheme = isDark ? "light" : "dark";
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // Keep theme state local to this tiny component. This prevents a theme
+    // switch from re-rendering the entire App/results tree. On supported
+    // browsers the page itself is cross-faded as one compositor animation.
+    if (typeof document.startViewTransition !== "function" || reduceMotion) {
+      applyTheme(nextTheme);
+      return;
+    }
+
+    document.startViewTransition(() => {
+      flushSync(() => applyTheme(nextTheme));
+    });
+  }
 
   return (
     <button
       type="button"
       className="theme-toggle"
-      onClick={onToggle}
+      onClick={handleToggle}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       aria-pressed={isDark}
     >
