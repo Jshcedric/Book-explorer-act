@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { flushSync } from "react-dom";
 import "./App.css";
 import SearchBar from "./components/SearchBar.jsx";
@@ -37,7 +37,16 @@ function App() {
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   });
 
-  useEffect(() => {
+  // useLayoutEffect (not useEffect) is essential here: flushSync forces
+  // React's render + DOM commit to happen synchronously, but it does
+  // NOT flush plain useEffects — those still run a frame later. Since
+  // handleThemeToggle relies on flushSync to make the theme change
+  // "done" before the view-transition snapshot is taken, the actual
+  // data-theme flip has to live in a layout effect too. With a plain
+  // useEffect, the browser would snapshot the "after" state before the
+  // colors had actually changed, then apply the real change a frame
+  // later with no transition — that mismatch was the visible stutter.
+  useLayoutEffect(() => {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("theme", theme);
   }, [theme]);

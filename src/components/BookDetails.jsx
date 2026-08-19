@@ -5,10 +5,25 @@ import "./BookDetails.css";
  * A modal rather than a separate page or inline expansion — keeps the
  * search results in place behind it so closing returns exactly where
  * the user was. Closes on Escape, backdrop click, or the close button.
+ *
+ * Closing is a two-step process (`isClosing` state) rather than an
+ * instant unmount, so there's a quick fade/drop-out to match the
+ * fade/rise-in on open — without it, the modal just vanished, which
+ * read as abrupt next to the smooth open.
  */
 function BookDetails({ book, onClose }) {
   const closeButtonRef = useRef(null);
   const [imageFailed, setImageFailed] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  function requestClose() {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      onClose();
+      return;
+    }
+    setIsClosing(true);
+  }
 
   // useLayoutEffect (not useEffect) so the scroll lock and focus move
   // happen in the same paint as the modal mounting, before the browser
@@ -20,7 +35,7 @@ function BookDetails({ book, onClose }) {
     closeButtonRef.current?.focus();
 
     function handleKeyDown(e) {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") requestClose();
     }
 
     document.addEventListener("keydown", handleKeyDown);
@@ -30,14 +45,20 @@ function BookDetails({ book, onClose }) {
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "";
     };
-  }, [onClose]);
+  }, []);
 
   const { title, author, firstPublishYear, coverUrl, editionCount, subjects } = book;
 
   return (
-    <div className="book-details-backdrop" onClick={onClose}>
+    <div
+      className={`book-details-backdrop${isClosing ? " book-details-backdrop--closing" : ""}`}
+      onClick={requestClose}
+      onAnimationEnd={(e) => {
+        if (isClosing && e.target === e.currentTarget) onClose();
+      }}
+    >
       <div
-        className="book-details"
+        className={`book-details${isClosing ? " book-details--closing" : ""}`}
         role="dialog"
         aria-modal="true"
         aria-labelledby="book-details-title"
@@ -46,7 +67,7 @@ function BookDetails({ book, onClose }) {
         <button
           type="button"
           className="book-details__close"
-          onClick={onClose}
+          onClick={requestClose}
           ref={closeButtonRef}
           aria-label="Close book details"
         >
