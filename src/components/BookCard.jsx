@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import "./BookCard.css";
 
 /**
@@ -7,6 +7,12 @@ import "./BookCard.css";
  * all, and a cover_i that exists but whose image 404s (this happens
  * fairly often with Open Library) — both fall back to the same
  * drawn placeholder instead of a broken-image icon.
+ *
+ * Wrapped in memo() because it's rendered dozens of times (a full grid
+ * of covers, more after a couple "Load more" clicks). Without this,
+ * toggling the theme re-renders every single card even though none of
+ * them actually change — that unnecessary work is what made the
+ * dark/light switch feel laggy despite the view-transition cross-fade.
  */
 function BookCard({ book, onSelect }) {
   const { title, author, firstPublishYear, coverUrl } = book;
@@ -71,4 +77,4 @@ function BookCard({ book, onSelect }) {
   );
 }
 
-export default BookCard;
+export default memo(BookCard);
