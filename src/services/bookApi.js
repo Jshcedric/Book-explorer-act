@@ -54,14 +54,16 @@ async function fetchBooks(url) {
   const data = await response.json();
   const docs = data.docs || [];
 
-  return docs.map(mapDocToBook);
+  return { books: docs.map(mapDocToBook), total: data.numFound || docs.length };
 }
 
 /**
- * Searches Open Library for books matching `query`.
+ * Searches Open Library for books matching `query`. Accepts `limit`/
+ * `offset` so the results grid can be paged with a "Load more" button
+ * instead of fetching everything up front.
  */
-export function searchBooks(query) {
-  const url = `${SEARCH_URL}?q=${encodeURIComponent(query)}`;
+export function searchBooks(query, { limit = 20, offset = 0 } = {}) {
+  const url = `${SEARCH_URL}?q=${encodeURIComponent(query)}&limit=${limit}&offset=${offset}`;
   return fetchBooks(url);
 }
 
@@ -73,14 +75,15 @@ export function searchBooks(query) {
  * books instead of the exact same eight every time — still real,
  * well-rated catalog data, just not pinned to one fixed query.
  */
-export function getRecommendedBooks() {
+export async function getRecommendedBooks() {
   const subject = RECOMMENDED_SUBJECTS[Math.floor(Math.random() * RECOMMENDED_SUBJECTS.length)];
   // Open Library sorts by rating, so hopping to a random page within
   // the first few dozen results still keeps quality high while
   // avoiding the exact same top-8 every reload.
   const offset = Math.floor(Math.random() * 40);
   const url = `${SEARCH_URL}?q=subject:${encodeURIComponent(subject)}&sort=rating&limit=8&offset=${offset}`;
-  return fetchBooks(url);
+  const { books } = await fetchBooks(url);
+  return books;
 }
 
 /**
@@ -88,9 +91,10 @@ export function getRecommendedBooks() {
  * powers the "browse by genre" chips on the initial screen. Reuses the
  * same fetch/error/mapping pipeline as everything else, so a genre
  * request behaves exactly like a search as far as the rest of the app
- * is concerned.
+ * is concerned. Also accepts `limit`/`offset` so genre browsing can be
+ * paged with "Load more" just like a text search.
  */
-export function getBooksBySubject(subject) {
-  const url = `${SEARCH_URL}?q=subject:${encodeURIComponent(subject)}&sort=rating&limit=20`;
+export function getBooksBySubject(subject, { limit = 20, offset = 0 } = {}) {
+  const url = `${SEARCH_URL}?q=subject:${encodeURIComponent(subject)}&sort=rating&limit=${limit}&offset=${offset}`;
   return fetchBooks(url);
 }

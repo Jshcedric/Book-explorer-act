@@ -23,6 +23,8 @@ import { searchBooks, getRecommendedBooks, getBooksBySubject } from "./services/
  * the same trigger/effect machinery can drive either a free-text search
  * or a "browse by genre" click from the initial screen.
  */
+const PAGE_SIZE = 20;
+
 function App() {
   const [query, setQuery] = useState("");
   const [searchTrigger, setSearchTrigger] = useState(null); // { type, text, attempt }
@@ -67,7 +69,9 @@ function App() {
   }
 
   const [books, setBooks] = useState([]);
+  const [totalResults, setTotalResults] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [apiError, setApiError] = useState("");
 
   const [recommendedBooks, setRecommendedBooks] = useState([]);
@@ -106,17 +110,19 @@ function App() {
       setApiError("");
 
       try {
-        const results =
+        const { books: results, total } =
           searchTrigger.type === "genre"
-            ? await getBooksBySubject(searchTrigger.text)
-            : await searchBooks(searchTrigger.text);
+            ? await getBooksBySubject(searchTrigger.text, { limit: PAGE_SIZE, offset: 0 })
+            : await searchBooks(searchTrigger.text, { limit: PAGE_SIZE, offset: 0 });
         if (!cancelled) {
           setBooks(results);
+          setTotalResults(total);
         }
       } catch (err) {
         if (!cancelled) {
           setApiError(err.message);
           setBooks([]);
+          setTotalResults(0);
         }
       } finally {
         if (!cancelled) {
@@ -174,6 +180,27 @@ function App() {
     setSearchTrigger((prev) => ({ ...prev, attempt: prev.attempt + 1 }));
   }
 
+  // Fetches the next page of the current search/genre and appends it to
+  // what's already on screen, rather than replacing it — the "Load
+  // more" button underneath the grid. `books.length` doubles as the
+  // offset since results are only ever appended in order.
+  async function handleLoadMore() {
+    if (!searchTrigger || isLoadingMore) return;
+
+    setIsLoadingMore(true);
+    try {
+      const { books: results } =
+        searchTrigger.type === "genre"
+          ? await getBooksBySubject(searchTrigger.text, { limit: PAGE_SIZE, offset: books.length })
+          : await searchBooks(searchTrigger.text, { limit: PAGE_SIZE, offset: books.length });
+      setBooks((prev) => [...prev, ...results]);
+    } catch (err) {
+      setApiError(err.message);
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }
+
   // Clicking the "The Stacks" title acts as a home link — it clears any
   // active search/genre/error state and returns to the initial screen.
   function handleGoHome() {
@@ -182,6 +209,7 @@ function App() {
     setApiError("");
     setSearchTrigger(null);
     setBooks([]);
+    setTotalResults(0);
     setSelectedBook(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -201,6 +229,8 @@ function App() {
     if (apiError) return <ErrorState message={apiError} onRetry={handleRetry} />;
     if (books.length === 0) return <EmptyState query={searchTrigger.label} />;
 
+    const hasMore = books.length < totalResults;
+
     return (
       <>
         <div className="results-heading">
@@ -210,6 +240,18 @@ function App() {
           <h2>{searchTrigger.label}</h2>
         </div>
         <BookList books={books} onSelectBook={setSelectedBook} />
+        {hasMore && (
+          <div className="load-more">
+            <button
+              type="button"
+              className="load-more__button"
+              onClick={handleLoadMore}
+              disabled={isLoadingMore}
+            >
+              {isLoadingMore ? "Loading…" : "Load more"}
+            </button>
+          </div>
+        )}
       </>
     );
   }

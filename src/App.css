@@ -83,6 +83,40 @@
   text-transform: capitalize;
 }
 
+.load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-4);
+}
+
+.load-more__button {
+  border: 1.5px solid var(--brass-text);
+  background: transparent;
+  color: var(--brass-text);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius-card);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.load-more__button:hover:not(:disabled) {
+  background: var(--brass-text);
+  color: var(--on-accent);
+}
+
+.load-more__button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.load-more__button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 @keyframes results-fade-in {
   from {
     opacity: 0;
