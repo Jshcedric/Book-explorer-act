@@ -73,51 +73,9 @@
   box-sizing: border-box;
 }
 
-/* Fallback for browsers without the View Transitions API (see
-   handleThemeToggle in App.jsx) — a plain per-element color transition.
-   Scoped to just these three properties, and skipped entirely once a
-   view transition is available, since animating background/border/color
-   on every element at once was the original source of the theme-switch
-   lag. */
-@supports not (view-transition-name: none) {
-  body,
-  .site-header,
-  .book-card,
-  .theme-toggle {
-    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
-  }
-}
-
-/* Smooth, single cross-fade for theme switches on browsers that support
-   it, instead of hundreds of individual element transitions. */
-@supports (view-transition-name: none) {
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 0.18s;
-    animation-timing-function: ease;
-    mix-blend-mode: normal;
-  }
-
-  ::view-transition-old(root) {
-    animation-name: theme-cross-fade-out;
-  }
-
-  ::view-transition-new(root) {
-    animation-name: theme-cross-fade-in;
-  }
-
-  @keyframes theme-cross-fade-out {
-    to {
-      opacity: 0;
-    }
-  }
-
-  @keyframes theme-cross-fade-in {
-    from {
-      opacity: 0;
-    }
-  }
-}
+/* Theme switching is animated by ThemeToggle with a single compositor-only
+   opacity animation on #root. Avoid global color transitions and View Transition
+   snapshots here; both are noticeably heavier on cover-image grids. */
 
 html,
 body {
@@ -140,11 +98,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-@supports not (view-transition-name: none) {
-  body {
-    transition: background-color 0.2s ease, color 0.2s ease;
-  }
-}
 
 #root {
   min-height: 100vh;

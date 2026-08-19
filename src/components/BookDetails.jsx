@@ -1,16 +1,7 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import "./BookDetails.css";
 
-/**
- * A modal rather than a separate page or inline expansion — keeps the
- * search results in place behind it so closing returns exactly where
- * the user was. Closes on Escape, backdrop click, or the close button.
- *
- * Closing is a two-step process (`isClosing` state) rather than an
- * instant unmount, so there's a quick fade/drop-out to match the
- * fade/rise-in on open — without it, the modal just vanished, which
- * read as abrupt next to the smooth open.
- */
 function BookDetails({ book, onClose }) {
   const closeButtonRef = useRef(null);
   const [imageFailed, setImageFailed] = useState(false);
@@ -25,31 +16,30 @@ function BookDetails({ book, onClose }) {
     setIsClosing(true);
   }
 
-  // useLayoutEffect (not useEffect) so the scroll lock and focus move
-  // happen in the same paint as the modal mounting, before the browser
-  // shows anything. With a plain useEffect this ran a frame *after*
-  // the modal was already visible — the scrollbar disappearing and the
-  // page reflowing right after the fade-in read as a small stutter on
-  // every click. Doing it here means there's just one clean frame.
-  useLayoutEffect(() => {
-    closeButtonRef.current?.focus();
+  // Run focus/keyboard work after the modal has painted. The previous
+  // useLayoutEffect + body overflow mutation forced synchronous layout at
+  // the exact moment a card was clicked, which made the popup feel delayed.
+  // Keeping the page scrollbar as-is also avoids a full-page reflow.
+  useEffect(() => {
+    const focusFrame = requestAnimationFrame(() => {
+      closeButtonRef.current?.focus({ preventScroll: true });
+    });
 
     function handleKeyDown(e) {
       if (e.key === "Escape") requestClose();
     }
 
     document.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = "hidden";
 
     return () => {
+      cancelAnimationFrame(focusFrame);
       document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "";
     };
   }, []);
 
   const { title, author, firstPublishYear, coverUrl, editionCount, subjects } = book;
 
-  return (
+  const modal = (
     <div
       className={`book-details-backdrop${isClosing ? " book-details-backdrop--closing" : ""}`}
       onClick={requestClose}
@@ -80,6 +70,7 @@ function BookDetails({ book, onClose }) {
               <img
                 src={coverUrl}
                 alt={`Cover of ${title}`}
+                decoding="async"
                 onError={() => setImageFailed(true)}
               />
             ) : (
@@ -132,6 +123,8 @@ function BookDetails({ book, onClose }) {
       </div>
     </div>
   );
+
+  return createPortal(modal, document.body);
 }
 
 export default BookDetails;

@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { flushSync } from "react-dom";
+import { useRef, useState } from "react";
 import "./ThemeToggle.css";
 
 function getInitialTheme() {
@@ -10,6 +9,7 @@ function getInitialTheme() {
 
 function ThemeToggle() {
   const [theme, setTheme] = useState(getInitialTheme);
+  const switchingRef = useRef(false);
   const isDark = theme === "dark";
 
   function applyTheme(nextTheme) {
@@ -19,20 +19,47 @@ function ThemeToggle() {
   }
 
   function handleToggle() {
+    if (switchingRef.current) return;
+
     const nextTheme = isDark ? "light" : "dark";
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const root = document.getElementById("root");
 
-    // Keep theme state local to this tiny component. This prevents a theme
-    // switch from re-rendering the entire App/results tree. On supported
-    // browsers the page itself is cross-faded as one compositor animation.
-    if (typeof document.startViewTransition !== "function" || reduceMotion) {
+    if (reduceMotion || !root || typeof root.animate !== "function") {
       applyTheme(nextTheme);
       return;
     }
 
-    document.startViewTransition(() => {
-      flushSync(() => applyTheme(nextTheme));
-    });
+    // Do NOT use document.startViewTransition here. On a page with many
+    // cover images, the browser snapshots the full viewport twice, which
+    // can create a visible flash/flicker. Instead, fade the already-
+    // composited app layer slightly, swap the CSS variables near the
+    // midpoint, then fade it back in. Opacity stays on the compositor and
+    // avoids repainting hundreds of cards as part of the animation.
+    switchingRef.current = true;
+
+    const animation = root.animate(
+      [
+        { opacity: 1 },
+        { opacity: 0.78, offset: 0.46 },
+        { opacity: 1 },
+      ],
+      {
+        duration: 170,
+        easing: "ease-in-out",
+      },
+    );
+
+    const swapTimer = window.setTimeout(() => {
+      applyTheme(nextTheme);
+    }, 72);
+
+    animation.finished
+      .catch(() => {})
+      .finally(() => {
+        window.clearTimeout(swapTimer);
+        switchingRef.current = false;
+      });
   }
 
   return (
