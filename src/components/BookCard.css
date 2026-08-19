@@ -10,6 +10,15 @@
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
   will-change: transform;
+  /* Skips layout/paint for cards scrolled out of view. Matters most
+     for the theme toggle: right before its cross-fade can start, the
+     browser has to recompute style for every element on the page
+     (colors cascade from CSS variables), and without this that cost
+     grows with every "Load more" click. contain-intrinsic-size keeps
+     a placeholder height so scrolling doesn't jump when a card is
+     skipped and then re-measured. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 340px;
 }
 
 .book-card:hover {
